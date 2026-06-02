@@ -1,0 +1,19 @@
+{
+    "name": "SWeetJelly.Initialiser.Framework",
+    "rootNamespace": "SWeetJelly.Initialiser.Framework",
+    "references": [
+        "Unity.InputSystem",
+        "SWeetJelly.Utils",
+        "SWeetJelly.Initialiser.Contract",
+        "SWeetJelly.Initialiser.App"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

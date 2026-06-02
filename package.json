@@ -1,0 +1,16 @@
+{
+  "name": "com.sweetjelly.initialiser",
+  "version": "1.0.0",
+  "displayName": "SWeetJelly Initialiser",
+  "description": "This is SWeetJelly Initialiser",
+  "unity": "2022.3",
+  "dependencies": {
+    "com.sweetjelly.utils": "1.7.0",
+    "com.sweetjelly.editor": "1.0.0"
+  },
+  "author": {
+    "name": "SWeetJellyStudio",
+    "email": "sweetjellystudio@gmail.com",
+    "url": "https://www.sweetjellystudio.com"
+  }
+}
