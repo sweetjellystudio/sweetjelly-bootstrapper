@@ -18,5 +18,6 @@
                         "description":  "Sample scene and assets for Bootstrapper Sample.",
                         "path":  "Samples~/Basic"
                     }
-                ]
+                ],
+    "license":  "MIT"
 }
