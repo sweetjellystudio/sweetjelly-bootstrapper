@@ -11,10 +11,6 @@
     using UnityEngine.EventSystems;
     using UnityEngine.Serialization;
 
-#if MODULE_INPUT_SYSTEM
-    using UnityEngine.InputSystem.UI;
-#endif
-
     [DefaultExecutionOrder(-999)]
     public sealed class BootstrapperBehaviour : MonoBehaviour
     {
@@ -68,11 +64,18 @@
                 eventSystem.transform.SetParent(transform);
             }
 
-#if MODULE_INPUT_SYSTEM
-            eventSystem.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
-#else
+            if (eventSystem.GetComponent<BaseInputModule>() != null)
+                return;
+
+            var inputSystemModuleType = Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
+
+            if (inputSystemModuleType != null)
+            {
+                eventSystem.gameObject.AddComponent(inputSystemModuleType);
+                return;
+            }
+
             eventSystem.gameObject.AddComponent<StandaloneInputModule>();
-#endif
         }
 
         private void BootstrapPackages(PackageBootstrapContext context)

@@ -1,11 +1,11 @@
 ﻿{
     "name":  "com.sweetjelly.bootstrapper",
-    "version":  "1.0.0",
+    "version":  "1.0.1",
     "displayName":  "SWeetJelly Bootstrapper",
     "description":  "Unity package bootstrapper and service registry for SWeetJelly packages.",
     "unity":  "2022.3",
     "dependencies":  {
-
+                         "com.unity.ugui":  "1.0.0"
                      },
     "author":  {
                    "name":  "SWeetJellyStudio",

@@ -1,4 +1,10 @@
-﻿# CHANGELOG
+# CHANGELOG
+
+## v1.0.1
+
+- [Changed] Removed direct compile-time dependency on Unity Input System from `BootstrapperBehaviour`.
+- [Changed] `BootstrapperBehaviour` now uses `InputSystemUIInputModule` only when the type is available, otherwise falls back to `StandaloneInputModule`.
+- [Changed] Declared `com.unity.ugui` as an explicit package dependency.
 
 ## v1.0.0
 
