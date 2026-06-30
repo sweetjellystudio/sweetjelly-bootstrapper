@@ -1,0 +1,16 @@
+﻿{
+    "name": "SWeetJelly.Bootstrapper.Framework.Unity.Editor",
+    "rootNamespace": "SWeetJelly.Bootstrapper.Framework.Unity.Editor",
+    "references": [
+        "SWeetJelly.Bootstrapper.Framework.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

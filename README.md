@@ -1,20 +1,20 @@
-# SWeetJelly Initialiser
+﻿# SWeetJelly Bootstrapper
 
-`SWeetJelly Initialiser` is a Unity bootstrap package for installing project modules and sharing the services they create.
+`SWeetJelly Bootstrapper` is a Unity bootstrap package for bootstrapping project packages and sharing the services they create.
 
-It provides a small service registry, ScriptableObject-based init modules, and a scene `MonoBehaviour` that installs those modules during Unity startup.
+It provides a small service registry, ScriptableObject-based package bootstrappers, and a scene `MonoBehaviour` that bootstraps those packages during Unity startup.
 
 ## Purpose
 
 Use this package when a Unity project needs one predictable place to compose shared systems such as Timer, Serialization, Save, Loading, Pooling, and project-specific services.
 
-The Initialiser package is responsible for:
+The Bootstrapper package is responsible for:
 
 - creating a shared `ServiceRegistry`
-- passing an `InitModuleInstallContext` to each init module
-- installing modules in a stable order
-- exposing registered services through `InitialiserBehaviour.Services`
-- keeping module setup logic out of gameplay/domain classes
+- passing an `PackageBootstrapContext` to each package bootstrapper
+- bootstrapping packages in a stable order
+- exposing registered services through `BootstrapperBehaviour.Services`
+- keeping package bootstrap logic out of gameplay/domain classes
 
 It is not intended to be a global service locator for arbitrary runtime code. Prefer resolving services in a composition root or bootstrapper, then passing dependencies explicitly.
 
@@ -25,48 +25,45 @@ Runtime/
   Contract/
     IServiceResolver.cs
     IServiceRegistry.cs
-    IInitModule.cs
-    RegisterModuleAttribute.cs
+    IPackageBootstrapper.cs
 
   App/
     ServiceRegistry.cs
 
   Framework/
-    InitialiserBehaviour.cs
-    InitModuleSo.cs
-    InitModuleInstallContext.cs
-    ProjectInitSettingSo.cs
+    BootstrapperBehaviour.cs
+    PackageBootstrapperSo.cs
+    PackageBootstrapContext.cs
+    PackageBootstrapperProfileSo.cs
 
 Editor/
   Framework/
-    InitModuleEditor.cs
 ```
 
 ## Assemblies
 
-### `SWeetJelly.Initialiser.Contract`
+### `SWeetJelly.Bootstrapper.Contract`
 
 Defines the public contracts used by modules and project bootstrap code.
 
 - `IServiceResolver`
 - `IServiceRegistry`
-- `IInitModule`
-- `RegisterModuleAttribute`
+- `IPackageBootstrapper`
 
-### `SWeetJelly.Initialiser.App`
+### `SWeetJelly.Bootstrapper.App`
 
 Contains the Unity-independent registry implementation.
 
 - `ServiceRegistry`
 
-### `SWeetJelly.Initialiser.Framework`
+### `SWeetJelly.Bootstrapper.Framework.Unity`
 
 Contains Unity-facing bootstrap types.
 
-- `InitialiserBehaviour`
-- `InitModuleSo`
-- `InitModuleInstallContext`
-- `ProjectInitSettingSo`
+- `BootstrapperBehaviour`
+- `PackageBootstrapperSo`
+- `PackageBootstrapContext`
+- `PackageBootstrapperProfileSo`
 
 ## Core Types
 
@@ -93,35 +90,35 @@ if (registry.TryResolve<IMyService>(out var service))
 }
 ```
 
-### `InitModuleSo`
+### `PackageBootstrapperSo`
 
-`InitModuleSo` is the base class for modules that install services.
+`PackageBootstrapperSo` is the base class for package bootstrappers that create, wire, and register services.
 
 ```csharp
-public sealed class MyInitModule : InitModuleSo
+public sealed class MyPackageBootstrapper : PackageBootstrapperSo
 {
-    public override string ModuleName => "My Module";
+    public override string PackageName => "My Module";
 
-    public override void Install(InitModuleInstallContext context)
+    public override void Bootstrap(PackageBootstrapContext context)
     {
         context.Services.Register<IMyService>(new MyService());
     }
 
-    public override void Uninstall(InitModuleInstallContext context)
+    public override void Shutdown(PackageBootstrapContext context)
     {
         context.Services.Unregister<IMyService>();
     }
 }
 ```
 
-Modules can be ordered with the serialized `InstallOrder` value on `InitModuleSo`. `InitialiserBehaviour` installs modules by `InstallOrder`, then by `ModuleName`.
+Packages can be ordered with the serialized `BootstrapOrder` value on `PackageBootstrapperSo`. `BootstrapperBehaviour` bootstraps packages by `BootstrapOrder`, then by `PackageName`.
 
-### `InitModuleInstallContext`
+### `PackageBootstrapContext`
 
-The install context gives each module access to the shared scene/bootstrap objects.
+The bootstrap context gives each package bootstrapper access to the shared scene/bootstrap objects.
 
 ```csharp
-public sealed class InitModuleInstallContext
+public sealed class PackageBootstrapContext
 {
     public GameObject HolderObject { get; }
     public Canvas Canvas { get; }
@@ -133,70 +130,70 @@ public sealed class InitModuleInstallContext
 Typical usage:
 
 - attach framework behaviours to `HolderObject`
-- use `Canvas` for UI-facing modules
-- use `EventSystem` for input/UI modules
+- use `Canvas` for UI-facing package bootstrappers
+- use `EventSystem` for input/UI package bootstrappers
 - register and resolve shared services through `Services`
 
-### `ProjectInitSettingSo`
+### `PackageBootstrapperProfileSo`
 
-`ProjectInitSettingSo` is a ScriptableObject asset that stores the list of init modules to install.
+`PackageBootstrapperProfileSo` is a ScriptableObject asset that stores the list of package bootstrappers to install.
 
 Create it from:
 
 ```text
-Create > SWeetJelly > Settings > Project Init Setting
+Create > SWeetJelly > Bootstrapper > Package Bootstrapper Profile
 ```
 
-Then assign module assets to its `Modules` list.
+Then assign bootstrapper assets to its `PackageBootstrappers` list.
 
-### `InitialiserBehaviour`
+### `BootstrapperBehaviour`
 
-`InitialiserBehaviour` is the scene entry point.
+`BootstrapperBehaviour` is the scene entry point.
 
 On `Awake()` it:
 
 1. creates a shared `ServiceRegistry`
 2. prepares the `EventSystem` if needed
-3. creates an `InitModuleInstallContext`
-4. installs modules from `ProjectInitSettingSo`
-5. exposes static accessors such as `IsInitialised` and `Services`
+3. creates an `PackageBootstrapContext`
+4. bootstraps packages from `PackageBootstrapperProfileSo`
+5. exposes static accessors such as `IsBootstrapped` and `Services`
 
-On destroy, it uninstalls installed modules in reverse order.
+On destroy, it shuts down bootstrapped packages in reverse order.
 
 ## Basic Setup
 
-1. Create a `ProjectInitSettingSo` asset.
-2. Create module assets such as Timer, Serialization, Save, and Loading init modules.
-3. Add those module assets to the project init setting.
-4. Add `InitialiserBehaviour` to an init scene object.
-5. Assign the init setting, canvas, and optional event system.
+1. Create a `PackageBootstrapperProfileSo` asset.
+2. Create bootstrapper assets such as Timer, Serialization, Save, and Loading package bootstrappers.
+3. Add those bootstrapper assets to the package Package Bootstrapper Profile.
+4. Add `BootstrapperBehaviour` to an init scene object.
+5. Assign the Package Bootstrapper Profile, canvas, and optional event system.
 
 Example scene object:
 
 ```text
-Initialiser
-  InitialiserBehaviour
-    Init Setting: ProjectInitSetting
+Bootstrapper
+  BootstrapperBehaviour
+    Package Bootstrapper Profile: PackageBootstrapperProfileSo
     Canvas: RootCanvas
     Event System: EventSystem
 ```
 
 ## Resolving Services
 
-Project bootstrap code can resolve installed services after the initialiser has run.
+Project bootstrap code can resolve installed services after the bootstrapper has run.
 
 ```csharp
-using SWeetJelly.Initialiser.Framework;
+using SWeetJelly.Bootstrapper.Framework.Unity;
 using SWeetJelly.Timer.Contract;
 
 public sealed class GameBootstrapBehaviour : MonoBehaviour
 {
     private void Start()
     {
-        if (!InitialiserBehaviour.IsInitialised)
-            throw new InvalidOperationException("Initialiser is not initialised.");
+        if (!BootstrapperBehaviour.IsBootstrapped)
+            throw new InvalidOperationException("Bootstrapper is not bootstrapped.");
 
-        var timerService = InitialiserBehaviour.Services.Resolve<ITimerService>();
+        var timerService = BootstrapperBehaviour.Services.Resolve<ITimerService>();
 
         var levelSession = new LevelSession(timerService);
         levelSession.Start();
@@ -207,8 +204,8 @@ public sealed class GameBootstrapBehaviour : MonoBehaviour
 Recommended use:
 
 - composition root
-- project bootstrapper
-- init modules
+- package bootstrapper composition root
+- package bootstrappers
 - debug/test entry points
 
 Avoid direct resolving from:
@@ -223,51 +220,51 @@ Prefer constructor or method injection after the project graph has been composed
 ## Module Installation Flow
 
 ```text
-InitialiserBehaviour.Awake()
+BootstrapperBehaviour.Awake()
   -> create ServiceRegistry
-  -> create InitModuleInstallContext
-  -> read ProjectInitSettingSo.Modules
-  -> order modules by InstallOrder, then ModuleName
-  -> install each module
-  -> mark Initialiser as initialised
+  -> create PackageBootstrapContext
+  -> read PackageBootstrapperProfileSo.PackageBootstrappers
+  -> order packages by BootstrapOrder, then PackageName
+  -> bootstrap each package
+  -> mark Bootstrapper as bootstrapped
 ```
 
 Destroy flow:
 
 ```text
-InitialiserBehaviour.OnDestroy()
-  -> uninstall installed modules in reverse order
-  -> clear installed module list
-  -> mark Initialiser as not initialised
+BootstrapperBehaviour.OnDestroy()
+  -> shutdown bootstrapped packages in reverse order
+  -> clear bootstrapped package list
+  -> mark Bootstrapper as not bootstrapped
 ```
 
-## Example Init Module
+## Example Package Bootstrapper
 
 ```csharp
-using SWeetJelly.Initialiser.Framework;
+using SWeetJelly.Bootstrapper.Framework.Unity;
 using SWeetJelly.Timer.App;
 using SWeetJelly.Timer.Contract;
 using SWeetJelly.Timer.Framework;
 
-public sealed class TimerInitModule : InitModuleSo
+public sealed class TimerPackageBootstrapper : PackageBootstrapperSo
 {
     private TimerService service;
     private PlayerLoopTimerDriver driver;
 
-    public override string ModuleName => "Timer";
+    public override string PackageName => "Timer";
 
-    public override void Install(InitModuleInstallContext context)
+    public override void Bootstrap(PackageBootstrapContext context)
     {
         service = new TimerService();
         driver = new PlayerLoopTimerDriver(service);
-        driver.Install();
+        driver.Bootstrap();
 
         context.Services.Register<ITimerService>(service);
     }
 
-    public override void Uninstall(InitModuleInstallContext context)
+    public override void Shutdown(PackageBootstrapContext context)
     {
-        driver?.Uninstall();
+        driver?.Shutdown();
         service?.Dispose();
 
         context.Services.Unregister<ITimerService>();
@@ -281,10 +278,10 @@ public sealed class TimerInitModule : InitModuleSo
 ## Design Notes
 
 - `ServiceRegistry` is intentionally small and type-based.
-- `InitModuleSo` should mostly create, wire, register, and unregister services.
-- Business logic should live in each feature package's App/Domain layers, not inside init modules.
-- `InitialiserBehaviour` is a Unity lifecycle driver, not a domain service.
-- Static access through `InitialiserBehaviour.Services` should be limited to bootstrap/composition code.
+- `PackageBootstrapperSo` should mostly create, wire, register, and unregister services.
+- Business logic should live in each feature package's App/Domain layers, not inside package bootstrappers.
+- `BootstrapperBehaviour` is a Unity lifecycle driver, not a domain service.
+- Static access through `BootstrapperBehaviour.Services` should be limited to bootstrap/composition code.
 
 ## Current Status
 
@@ -292,7 +289,7 @@ This package currently provides:
 
 - service registry contracts
 - a default `ServiceRegistry`
-- ScriptableObject init module workflow
-- project init setting asset
-- Unity `InitialiserBehaviour`
-- install/uninstall lifecycle support
+- ScriptableObject package bootstrapper workflow
+- package Package Bootstrapper Profile asset
+- Unity `BootstrapperBehaviour`
+- bootstrap/shutdown lifecycle support

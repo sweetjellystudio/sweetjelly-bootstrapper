@@ -1,10 +1,9 @@
 {
-    "name": "SWeetJelly.Initialiser.Framework.Editor",
-    "rootNamespace": "SWeetJelly.Initialiser.Framework.Editor",
+    "name": "SWeetJelly.Bootstrapper.Sample",
+    "rootNamespace": "SWeetJelly.Samples.Bootstrapper",
     "references": [
-        "SWeetJelly.Initialiser.Framework",
-        "SWeetJelly.Initialiser.Contract",
-        "SWeetJelly.Editor"
+        "SWeetJelly.Bootstrapper.Contract",
+        "SWeetJelly.Bootstrapper.Framework.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

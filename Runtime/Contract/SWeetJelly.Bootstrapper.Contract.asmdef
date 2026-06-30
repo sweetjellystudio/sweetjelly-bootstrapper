@@ -1,6 +1,6 @@
 {
-    "name": "SWeetJelly.Initialiser.Contract",
-    "rootNamespace": "SWeetJelly.Initialiser.Contract",
+    "name": "SWeetJelly.Bootstrapper.Contract",
+    "rootNamespace": "SWeetJelly.Bootstrapper.Contract",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using SWeetJelly.Initialiser.Contract;
+using SWeetJelly.Bootstrapper.Contract;
 
-namespace SWeetJelly.Initialiser.App
+namespace SWeetJelly.Bootstrapper.App
 {
     public sealed class ServiceRegistry : IServiceRegistry
     {

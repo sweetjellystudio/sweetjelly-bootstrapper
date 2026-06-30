@@ -1,11 +1,9 @@
 {
-    "name": "SWeetJelly.Initialiser.Framework",
-    "rootNamespace": "SWeetJelly.Initialiser.Framework",
+    "name": "SWeetJelly.Bootstrapper.Framework.Unity",
+    "rootNamespace": "SWeetJelly.Bootstrapper.Framework.Unity",
     "references": [
-        "Unity.InputSystem",
-        "SWeetJelly.Utils",
-        "SWeetJelly.Initialiser.Contract",
-        "SWeetJelly.Initialiser.App"
+        "SWeetJelly.Bootstrapper.Contract",
+        "SWeetJelly.Bootstrapper.App"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
