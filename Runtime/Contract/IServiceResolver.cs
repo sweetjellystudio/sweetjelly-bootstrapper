@@ -1,4 +1,4 @@
-namespace SWeetJelly.Initialiser.Contract
+namespace SWeetJelly.Bootstrapper.Contract
 {
     public interface IServiceResolver
     {

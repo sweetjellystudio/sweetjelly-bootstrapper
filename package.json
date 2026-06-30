@@ -1,16 +1,22 @@
-{
-  "name": "com.sweetjelly.initialiser",
-  "version": "1.0.0",
-  "displayName": "SWeetJelly Initialiser",
-  "description": "This is SWeetJelly Initialiser",
-  "unity": "2022.3",
-  "dependencies": {
-    "com.sweetjelly.utils": "1.7.0",
-    "com.sweetjelly.editor": "1.0.0"
-  },
-  "author": {
-    "name": "SWeetJellyStudio",
-    "email": "sweetjellystudio@gmail.com",
-    "url": "https://www.sweetjellystudio.com"
-  }
+﻿{
+    "name":  "com.sweetjelly.bootstrapper",
+    "version":  "1.0.0",
+    "displayName":  "SWeetJelly Bootstrapper",
+    "description":  "Unity package bootstrapper and service registry for SWeetJelly packages.",
+    "unity":  "2022.3",
+    "dependencies":  {
+
+                     },
+    "author":  {
+                   "name":  "SWeetJellyStudio",
+                   "email":  "sweetjellystudio@gmail.com",
+                   "url":  "https://www.sweetjellystudio.com"
+               },
+    "samples":  [
+                    {
+                        "displayName":  "Bootstrapper Sample",
+                        "description":  "Sample scene and assets for Bootstrapper Sample.",
+                        "path":  "Samples~/Basic"
+                    }
+                ]
 }

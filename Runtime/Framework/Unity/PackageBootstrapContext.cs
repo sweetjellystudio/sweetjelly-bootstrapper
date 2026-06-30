@@ -1,18 +1,18 @@
-namespace SWeetJelly.Initialiser.Framework
+namespace SWeetJelly.Bootstrapper.Framework.Unity
 {
     using System;
     using UnityEngine;
     using UnityEngine.EventSystems;
-    using SWeetJelly.Initialiser.Contract;
+    using SWeetJelly.Bootstrapper.Contract;
 
-    public sealed class InitModuleInstallContext
+    public sealed class PackageBootstrapContext
     {
         public GameObject HolderObject { get; }
         public Canvas Canvas { get; }
         public EventSystem EventSystem { get; }
         public IServiceRegistry Services { get; }
 
-        public InitModuleInstallContext(
+        public PackageBootstrapContext(
             GameObject holderObject,
             Canvas canvas,
             EventSystem eventSystem,

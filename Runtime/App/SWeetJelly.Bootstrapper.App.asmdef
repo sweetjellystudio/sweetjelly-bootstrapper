@@ -1,8 +1,8 @@
 {
-    "name": "SWeetJelly.Initialiser.App",
-    "rootNamespace": "",
+    "name": "SWeetJelly.Bootstrapper.App",
+    "rootNamespace": "SWeetJelly.Bootstrapper.App",
     "references": [
-        "SWeetJelly.Initialiser.Contract"
+        "SWeetJelly.Bootstrapper.Contract"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
