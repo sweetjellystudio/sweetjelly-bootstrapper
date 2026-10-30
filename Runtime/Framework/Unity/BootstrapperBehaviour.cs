@@ -1,4 +1,4 @@
-﻿namespace SWeetJelly.Bootstrapper.Framework.Unity
+namespace SWeetJelly.Bootstrapper.Framework.Unity
 {
 #pragma warning disable 0649
 
@@ -22,6 +22,7 @@
         private readonly ServiceRegistry serviceRegistry = new ServiceRegistry();
         private readonly List<IUnityPackageBootstrapper> bootstrappedPackages = new List<IUnityPackageBootstrapper>();
 
+        private static BootstrapperBehaviour owner;
         private PackageBootstrapContext context;
 
         public static Canvas Canvas { get; private set; }
@@ -38,19 +39,28 @@
 
         private void Bootstrap()
         {
-            if (IsBootstrapped)
+            if (owner != null)
                 return;
 
+            owner = this;
             Canvas = canvas;
             GameObject = gameObject;
             PackageBootstrapperProfile = packageBootstrapperProfile;
             Services = serviceRegistry;
 
-            SetupInputModule();
-            DontDestroyOnLoad(gameObject);
-
-            context = new PackageBootstrapContext(gameObject, canvas, eventSystem, serviceRegistry);
-            BootstrapPackages(context);
+            try
+            {
+                SetupInputModule();
+                DontDestroyOnLoad(gameObject);
+                context = new PackageBootstrapContext(gameObject, canvas, eventSystem, serviceRegistry);
+                BootstrapPackages(context);
+            }
+            catch
+            {
+                ShutdownPackages();
+                ClearPublishedState();
+                throw;
+            }
 
             IsBootstrapped = true;
             Bootstrapped?.Invoke(this, EventArgs.Empty);
@@ -104,8 +114,31 @@
 
         private void OnDestroy()
         {
-            ShutdownPackages();
+            if (!ReferenceEquals(owner, this))
+                return;
+
+            try
+            {
+                ShutdownPackages();
+            }
+            finally
+            {
+                ClearPublishedState();
+            }
+        }
+
+        private void ClearPublishedState()
+        {
+            if (!ReferenceEquals(owner, this))
+                return;
+
             IsBootstrapped = false;
+            Services = null;
+            PackageBootstrapperProfile = null;
+            Canvas = null;
+            GameObject = null;
+            context = null;
+            owner = null;
         }
 
         private void ShutdownPackages()
@@ -120,7 +153,14 @@
                 if (packageBootstrapper == null)
                     continue;
 
-                packageBootstrapper.Shutdown(context);
+                try
+                {
+                    packageBootstrapper.Shutdown(context);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogException(exception, this);
+                }
             }
 
             bootstrappedPackages.Clear();

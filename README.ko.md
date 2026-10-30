@@ -152,3 +152,15 @@ public sealed class GameBootstrapBehaviour : MonoBehaviour
 - `PackageBootstrapperProfileSo`는 Unity 직렬화를 위해 구체 `PackageBootstrapperSo[]`를 들고, 외부에는 interface list로 노출한다.
 - `BootstrapperBehaviour.Services`를 통한 static 접근은 bootstrap/composition 코드로 제한하는 것이 좋다.
 - domain/app 로직은 가능하면 생성자 또는 method injection으로 의존성을 전달받는다.
+## 2.0.0 이전과 설치
+
+Unity 6.3 LTS와 com.unity.ugui 2.0.0이 필요합니다. 버전 태그 게시 후 Unity Package Manager에서 https://github.com/sweetjellystudio/sweetjelly-bootstrapper.git#v2.0.0 을 설치합니다. Input System은 선택 사항이며 프로젝트 입력 설정과 선택된 모듈을 맞춰야 합니다. 기존 BaseInputModule은 유지합니다.
+
+기존 profile·package 에셋과 공개 인터페이스는 유지합니다. 실행 중 하나의 BootstrapperBehaviour만 static 상태를 소유합니다. prototype/demo 설정을 따로 두는 방식은 유지하며 동시 독립 runtime scope는 제공하지 않습니다. 무시된 중복 객체의 파괴는 owner에 영향을 주지 않습니다. owner 종료 시 Services·Canvas·GameObject·PackageBootstrapperProfile 참조를 비우지만 설정 에셋은 삭제하지 않습니다.
+
+Bootstrap 실패 시 이후 패키지는 실행하지 않고 성공 완료한 패키지만 역순 정리한 뒤 원래 예외를 유지합니다. 실패한 패키지의 부분 생성 자원은 해당 패키지가 정리해야 합니다. Shutdown 예외는 각각 기록하고 나머지 정리를 계속합니다. 등록 service의 임의 Dispose는 수행하지 않으며 각 패키지가 정리를 소유합니다. Bootstrapped 구독자 예외는 성공 이후의 알림 실패이며 초기화를 rollback하지 않습니다. 구독 해제는 소비자가 담당합니다.
+
+[아키텍처][architecture]와 [수명주기 결정][lifecycle]을 참고하세요. 실제 검증 Editor 패치와 플랫폼은 별도 결과로 기록하며 모든 플랫폼 검증을 의미하지 않습니다.
+
+[architecture]: ARCHITECTURE.md
+[lifecycle]: docs/adr/0001-runtime-ownership-and-failure-cleanup.md
