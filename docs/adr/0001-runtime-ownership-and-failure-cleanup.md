@@ -1,0 +1,7 @@
+#   Runtime ownership and failure cleanup
+
+Accepted 2026-10-30 for 2.0.0. A single runtime bootstrapper owns published static references; ScriptableObject profile assets remain configuration, not the global runtime instance. Retaining unguarded static updates allowed destruction of an ignored duplicate to invalidate a healthy owner. Ownership is now established before callbacks and only that instance may clear the state.
+
+On Bootstrap failure, stop subsequent packages and roll back successfully completed packages in reverse order while preserving the original exception. Calling Shutdown on a package whose Bootstrap failed was considered, but existing implementations do not promise partial-initialization safety. That package must clean its own partial resources before throwing. Completed packages still receive rollback even if another Shutdown fails; failures are logged individually.
+
+On owner destruction, attempt all recorded Shutdown calls and clear global runtime references even when a callback fails. Automatic disposal of arbitrary registered services is excluded because disposal ownership belongs to individual packages. Bootstrapped subscriber errors remain distinct from initialization errors: notification happens after successful initialization. This preserves the synchronous public contracts while changing erroneous stale-state behavior. The Unity support floor rises to 6.3 LTS, with uGUI 2.0.0 required by the actual EventSystem integration.

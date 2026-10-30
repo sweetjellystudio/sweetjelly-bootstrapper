@@ -1,11 +1,11 @@
 ﻿{
     "name":  "com.sweetjelly.bootstrapper",
-    "version":  "1.0.1",
+    "version":  "2.0.0",
     "displayName":  "SWeetJelly Bootstrapper",
     "description":  "Unity package bootstrapper and service registry for SWeetJelly packages.",
-    "unity":  "2022.3",
+    "unity":  "6000.3",
     "dependencies":  {
-                         "com.unity.ugui":  "1.0.0"
+                         "com.unity.ugui":  "2.0.0"
                      },
     "author":  {
                    "name":  "SWeetJellyStudio",
@@ -19,5 +19,5 @@
                         "path":  "Samples~/Basic"
                     }
                 ],
-    "license":  "MIT"
+    "license":  "Refer to LICENSE.md file"
 }

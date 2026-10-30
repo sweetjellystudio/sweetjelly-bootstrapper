@@ -293,3 +293,16 @@ This package currently provides:
 - package Package Bootstrapper Profile asset
 - Unity `BootstrapperBehaviour`
 - bootstrap/shutdown lifecycle support
+
+## 2.0.0 migration and installation
+
+Requires Unity 6.3 LTS and com.unity.ugui 2.0.0. After the version tag is published, install https://github.com/sweetjellystudio/sweetjelly-bootstrapper.git#v2.0.0 with Unity Package Manager. Input System is optional; configure the project's active input backend to match the chosen module. Existing BaseInputModule components are preserved.
+
+Existing profile assets, package assets and public interfaces are retained. Only one runtime BootstrapperBehaviour owns static state. Separate prototype/demo configurations remain valid; simultaneous independent runtime scopes are not provided. Destroying an ignored duplicate no longer clears the owner. On owner shutdown, Services, Canvas, GameObject and PackageBootstrapperProfile are cleared; the referenced configuration assets are not deleted.
+
+A failed Bootstrap stops later packages, reverses successfully completed initializations and rethrows the original exception. The failing package must clean its own partially created resources. Shutdown logs each exception and continues. Registered services are not automatically disposed; each package owns cleanup. Bootstrapped subscriber exceptions occur after success and do not roll back initialization. Subscribers must unsubscribe normally.
+
+See [architecture][architecture] and the [lifecycle decision][lifecycle]. Actual tested Editor patches and platforms are recorded separately; support does not claim verification of every platform.
+
+[architecture]: ARCHITECTURE.md
+[lifecycle]: docs/adr/0001-runtime-ownership-and-failure-cleanup.md

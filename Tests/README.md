@@ -28,3 +28,8 @@
   - event system reference가 없을 때 child `EventSystem`을 생성하는지 검증한다.
 
 `BootstrapperBehaviour`의 serialized field는 테스트에서 private field reflection으로 주입한다. 실제 프로젝트에서는 Unity Inspector 또는 prefab/scene reference로 설정한다.
+## 2.0.0 lifecycle regressions
+
+BootstrapperLifecycleRegressionTest covers duplicate destruction preserving the owner, owner teardown clearing published references, rollback of completed packages on Bootstrap failure, continued cleanup after Shutdown failure, preservation of the original Bootstrap exception when rollback also fails, optional Input System module selection versus legacy fallback, and preservation of an assigned EventSystem with an existing input module. LogAssert.Expect explicitly consumes the deliberate failure-path exceptions; their presence in Console history does not mean the passing suite failed.
+
+Run EditMode and PlayMode separately in the package development host and an isolated consumer with declared uGUI and test tools. For the optional Input System branch, use a separate consumer with that package installed and the active input backend configured appropriately (Both is used by the development verification). Sample import, actual Inspector/scene observation and Player build are separate acceptance checks. Git URL installation is verified after the user publishes the version tag.

@@ -1,10 +1,10 @@
-﻿{
+{
     "name": "SWeetJelly.Bootstrapper.Framework.Unity.Editor",
     "rootNamespace": "SWeetJelly.Bootstrapper.Framework.Unity.Editor",
     "references": [
         "SWeetJelly.Bootstrapper.Framework.Unity"
     ],
-    "includePlatforms": [],
+    "includePlatforms": ["Editor"],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
